@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Business Card — Click-to-Copy Contact Items</title>
+<style>
+  :root{
+    --accent:#ff6b6b;
+    --accent-2:#6b8bff;
+    --text:#f7f7fb;
+    --muted:rgba(247,247,251,0.75);
+    --card-gap:48px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#071028 0%, #041022 70%);color:var(--text);-webkit-font-smoothing:antialiased}
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .card{
+    width:100%;
+    max-width:1200px;
+    border-radius:18px;
+    overflow:visible;
+    display:grid;
+    grid-template-columns:420px 1fr;
+    gap:0;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.04);
+    box-shadow:0 12px 40px rgba(2,6,23,0.6);
+    backdrop-filter: blur(6px) saturate(1.05);
+  }
+
+  @media (min-width:1200px){
+    .card{
+      max-width: calc(100% - 56px);
+      width: calc(100% - 56px);
+      grid-template-columns: 480px 1fr;
+    }
+  }
+
+  .left{
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content: center;
+    gap:14px;
+    background:linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.22));
+    min-height:420px;
+    position: relative;
+  }
+
+  .hero-photo{
+    width:100%;
+    height:320px;
+    border-radius:12px;
+    position:relative;
+    box-shadow:0 8px 30px rgba(2,6,23,0.6);
+    border:1px solid rgba(255,255,255,0.03);
+    background:rgba(0,0,0,0.12);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  /* NEW RELIABLE CAROUSEL STYLES */
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  
+  .carousel-slides {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.36);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: var(--text);
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    z-index: 10;
+    transition: all 0.2s ease;
+  }
+  
+  .carousel-btn:hover {
+    background: rgba(0,0,0,0.5);
+    transform: translateY(-50%) scale(1.05);
+  }
+  
+  .carousel-prev {
+    left: 12px;
+  }
+  
+  .carousel-next {
+    right: 12px;
+  }
+  
+  .carousel-indicators {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  
+  .carousel-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.18);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .carousel-indicator.active {
+    background: linear-gradient(90deg,var(--accent),var(--accent-2));
+    transform: scale(1.2);
+  }
+
+  .right{
+    padding:20px 28px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    min-width:0;
+  }
+
+  .header-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap: wrap;
+  }
+  .header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+    flex: 1;
+    min-width: 250px;
+  }
+  #logo{
+    width:84px;
+    height:84px;
+    border-radius:14px;
+    object-fit:contain;
+    padding:8px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    border:2px solid rgba(255,255,255,0.06);
+    box-shadow:0 6px 20px rgba(107,139,255,0.08);
+    flex-shrink:0
+  }
+  .name{
+    font-size:20px;
+    font-weight:700;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:PRE-WRAP;
+  }
+  .role{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:4px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* COMPACT SOCIALS DESIGN */
+  .socials{
+    display:flex;
+    gap:6px;
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+  .social-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:42px;
+    height:42px;
+    border-radius:10px;
+    background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.04);
+    color:var(--text);
+    cursor:pointer;
+    text-decoration:none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .social-btn:hover{
+    transform: translateY(-2px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.45);
+    background:linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+  }
+  .social-btn:active{
+    transform: translateY(0);
+  }
+  .social-btn .tooltip{
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .social-btn:hover .tooltip{
+    opacity: 1;
+  }
+
+  .contact-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:10px;margin-top:6px}
+  .contact-item{
+    display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);
+    min-width:0;cursor:pointer;
+  }
+  .contact-item[role="button"]{cursor:pointer}
+  .contact-item svg{width:20px;height:20px;flex-shrink:0;opacity:0.95}
+  .contact-item > div{min-width:0}
+
+  .contact-item .meta{font-size:12px;color:var(--muted)}
+  .contact-item .value{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .services{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .service-pill{padding:8px 12px;border-radius:999px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);font-size:13px;color:var(--muted)}
+  .about{color:var(--muted);line-height:1.5;font-size:14px;margin-top:6px}
+  .actions{margin-top:auto;display:flex;gap:10px;align-items:center}
+  .primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;padding:12px 16px;border-radius:12px;font-weight:600}
+  .secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text);padding:10px 12px;border-radius:12px}
+  .muted{color:var(--muted)} .copy-hint{font-size:12px;color:rgba(247,247,251,0.55);margin-left:8px}
+
+  @media (max-width:900px){
+    .card{grid-template-columns:1fr;max-width:720px}
+    .left{order:2;padding:16px}
+    .right{order:1;padding:18px}
+    .hero-photo{height:260px}
+    .contact-grid{grid-template-columns:1fr;gap:10px}
+    .social-btn{width:40px;height:40px}
+    .carousel-btn{width:40px;height:40px}
+    #logo{width:72px;height:72px}
+    .name{white-space:normal}
+    .role{white-space:normal}
+    .socials {
+      justify-content: flex-start;
+      margin-top: 10px;
+      width: 100%;
+    }
+    .header {
+      min-width: auto;
+    }
+  }
+
+  @media (max-width:420px){
+    .name{font-size:18px}
+    .role{font-size:12px}
+    #logo{width:64px;height:64px}
+    .hero-photo{height:220px}
+    .primary{flex:1;padding:12px}
+    .secondary{padding:12px}
+    .carousel-btn{width:36px;height:36px}
+  }
+
+  .btn:focus,.carousel-arrow:focus,.carousel-indicators button:focus,.contact-item:focus{outline:3px solid rgba(107,139,255,0.18);outline-offset:2px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="region" aria-label="Business card">
+      <div class="left">
+        <div class="hero-photo" aria-roledescription="carousel region">
+          <!-- NEW RELIABLE CAROUSEL -->
+          <div class="carousel-container" id="carouselContainer">
+            <div class="carousel-slides" id="carouselSlides">
+              <div class="carousel-slide">
+                <img src="img/photo_5269765370451529272_y.jpg" alt="Portfolio image 1">
+              </div>
+              <div class="carousel-slide">
+                <img src="img/photo_5269765370451529273_y.jpg" alt="Portfolio image 2">
+              </div>
+              <div class="carousel-slide">
+                <img src="img/photo_5269765370451529274_y.jpg" alt="Portfolio image 3">
+              </div>
+			  
+			  <div class="carousel-slide">
+                <img src="img/photo_5269765370451529275_y.jpg" alt="Portfolio image 4">
+              </div>
+			  <div class="carousel-slide">
+                <img src="img/photo_5269765370451529276_y.jpg" alt="Portfolio image 5">
+              </div>
+			  <div class="carousel-slide">
+                <img src="img/photo_5269765370451529277_y.jpg" alt="Portfolio image 6">
+              </div>
+			  <div class="carousel-slide">
+                <img src="img/photo_5269765370451529278_y.jpg" alt="Portfolio image 7">
+              </div>
+            </div>
+            
+            <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="Previous slide">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
+            
+            <button class="carousel-btn carousel-next" id="carouselNext" aria-label="Next slide">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 6l6 6-6 6"></path>
+              </svg>
+            </button>
+            
+            <div class="carousel-indicators" id="carouselIndicators">
+              <button class="carousel-indicator active" aria-label="Go to slide 1"></button>
+              <button class="carousel-indicator" aria-label="Go to slide 2"></button>
+              <button class="carousel-indicator" aria-label="Go to slide 3"></button>
+			  <button class="carousel-indicator" aria-label="Go to slide 4"></button>
+			  <button class="carousel-indicator" aria-label="Go to slide 5"></button>
+			  <button class="carousel-indicator" aria-label="Go to slide 6"></button>
+			  <button class="carousel-indicator" aria-label="Go to slide 7"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="header-row">
+          <div class="header">
+            <img id="logo" src="img/Logo.jpg" alt="Logo">
+            <div>
+              <div class="name" id="businessName">MTB Construct</div>
+              <div class="role" id="businessRole">Photographer • Visual Designer • Consultant</div>
+            </div>
+          </div>
+
+          <!-- COMPACT SOCIALS -->
+          <div class="socials" aria-hidden="false">
+            <a class="social-btn" id="instagramBtn" href="https://instagram.com/mtbconstruct12" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" width="20" height="20">
+                <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" fill="none"></rect>
+                <circle cx="12" cy="12" r="3.2"></circle>
+                <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"></circle>
+              </svg>
+              <span class="tooltip">Instagram</span>
+            </a>
+
+            <button class="social-btn" id="whatsappBtn" aria-label="WhatsApp">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
+  <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+</svg>
+              <span class="tooltip">WhatsApp</span>
+            </button>
+
+            <button class="social-btn" id="telegramBtn" aria-label="Telegram">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4">
+                <path d="M22 3L2 12l5 2 2 6 3-4 6 3 4-17z"></path>
+              </svg>
+              <span class="tooltip">Telegram</span>
+            </button>
+
+            <button class="social-btn" id="viberBtn" aria-label="Viber">
+              <svg width="20px" height="20px" viewBox="0 0 32 32" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"> <path d="M15.198 0.005c-2.568 0.031-8.089 0.453-11.177 3.286-2.297 2.276-3.099 5.641-3.193 9.802-0.078 4.146-0.172 11.932 7.333 14.052v3.229c0 0-0.047 1.292 0.807 1.557 1.052 0.333 1.651-0.661 2.651-1.729l1.865-2.109c5.135 0.427 9.068-0.557 9.521-0.703 1.042-0.333 6.911-1.083 7.87-8.87 0.984-8.042-0.479-13.109-3.12-15.401h-0.016c-0.797-0.734-4-3.068-11.156-3.094 0 0-0.531-0.036-1.385-0.021zM15.286 2.266c0.729-0.005 1.172 0.026 1.172 0.026 6.057 0.016 8.948 1.839 9.63 2.453 2.224 1.906 3.37 6.474 2.531 13.188-0.797 6.51-5.557 6.922-6.438 7.203-0.375 0.12-3.839 0.974-8.203 0.693 0 0-3.25 3.922-4.266 4.932-0.161 0.177-0.349 0.229-0.469 0.203-0.172-0.042-0.224-0.255-0.214-0.547l0.031-5.359c-6.365-1.76-5.99-8.401-5.922-11.87 0.078-3.469 0.729-6.307 2.667-8.229 2.609-2.359 7.297-2.677 9.479-2.693zM15.766 5.734c-0.219-0.005-0.401 0.177-0.401 0.396 0 0.224 0.182 0.401 0.401 0.401 2.005-0.036 3.938 0.724 5.375 2.12 1.453 1.411 2.161 3.307 2.188 5.786 0 0.219 0.177 0.401 0.401 0.401v-0.016c0.219 0 0.401-0.177 0.401-0.396 0.099-2.359-0.776-4.651-2.417-6.349-1.583-1.547-3.589-2.344-5.948-2.344zM10.495 6.651c-0.281-0.042-0.573 0.016-0.818 0.161h-0.021c-0.542 0.318-1.047 0.719-1.526 1.255-0.365 0.422-0.563 0.849-0.615 1.26-0.031 0.245-0.010 0.49 0.063 0.724l0.026 0.016c0.411 1.208 0.948 2.37 1.604 3.464 0.844 1.536 1.885 2.958 3.094 4.229l0.036 0.052 0.057 0.042 0.036 0.042 0.042 0.036c1.276 1.214 2.698 2.255 4.24 3.109 1.76 0.958 2.828 1.411 3.469 1.599v0.010c0.188 0.057 0.359 0.083 0.531 0.083 0.547-0.042 1.063-0.26 1.469-0.63 0.521-0.469 0.932-0.984 1.24-1.531v-0.010c0.307-0.578 0.203-1.125-0.24-1.495-0.885-0.776-1.849-1.464-2.865-2.057-0.682-0.37-1.375-0.146-1.656 0.229l-0.599 0.755c-0.307 0.375-0.865 0.323-0.865 0.323l-0.016 0.010c-4.161-1.063-5.271-5.276-5.271-5.276s-0.052-0.573 0.333-0.865l0.75-0.604c0.359-0.292 0.609-0.984 0.224-1.667-0.589-1.021-1.276-1.979-2.052-2.865-0.167-0.208-0.406-0.349-0.672-0.401zM16.458 7.839c-0.531 0-0.531 0.802 0.005 0.802 1.333 0.021 2.604 0.573 3.531 1.531 0.844 0.932 1.281 2.172 1.198 3.427 0.005 0.219 0.182 0.396 0.401 0.396l0.016 0.021c0.219 0 0.401-0.182 0.401-0.401 0.036-1.589-0.458-2.922-1.427-3.99-0.974-1.068-2.333-1.667-4.068-1.786-0.021 0-0.036 0-0.057 0zM17.115 9.995c-0.547-0.016-0.568 0.802-0.026 0.818 1.318 0.068 1.958 0.734 2.042 2.104 0.005 0.219 0.182 0.391 0.396 0.391h0.016c0.224-0.010 0.401-0.203 0.385-0.427-0.094-1.786-1.068-2.792-2.797-2.885-0.005 0-0.010 0-0.016 0z"/> </svg>
+
+
+
+
+			  <span class="tooltip">Viber</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-weight:700">Despre noi</div>
+          <div class="about" id="aboutText">
+<p>MTB Construct este o echipă specializată în tavane extensibile moderne, realizate cu atenție la detalii și finisaje de înaltă calitate. Lucrăm cu materiale premium și tehnologii actuale, pentru ca fiecare client să primească un interior elegant, luminos și durabil.</p>
+<p>Punem accent pe profesionalism, promptitudine și comunicare clară. Scopul nostru este ca fiecare proiect să fie realizat curat, rapid și la cele mai înalte standarde, astfel încât rezultatul final să depășească așteptările.</p>
+          </div>
+        </div>
+
+        <div class="contact-grid" role="list" aria-label="Contact information">
+          <!-- Phone: clicking the item copies the number; button remains "Call" -->
+          <div class="contact-item" role="button" tabindex="0" data-type="phone" data-value="+37360844915" aria-label="Telefon: dă click pentru a copia">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M22 16.92V21a1 1 0 0 1-1.11 1A19 19 0 0 1 3 5.11 1 1 0 0 1 4 4h4.09a1 1 0 0 1 1 .75 12.05 12.05 0 0 0 .7 2.81 1 1 0 0 1-.24 1L8.91 11.09a16 16 0 0 0 6 6l1.53-1.53a1 1 0 0 1 1-.24 12.05 12.05 0 0 0 2.81.7 1 1 0 0 1 .75 1V21z"></path></svg>
+            <div style="flex:1">
+              <div class="value" id="phoneText">+373 60844915</div>
+              <div class="meta">Telefon — dă click pentru a copia</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px">
+              <button class="btn secondary" data-action="call" data-value="+37360844915" aria-label="Call">Sună</button>
+            </div>
+          </div>
+
+          <div class="contact-item" role="button" tabindex="0" data-type="email" data-value="mtbconstruct12@gmail.com" aria-label="Email: dă click pentru a copia">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
+  <path d="M3.84674576,17.8602756 C4.0442161,17.955959 4.26584099,18.0096122 4.49999728,18.0096122 L19.5,18.0096122 C19.734157,18.0096122 19.9557825,17.9559587 20.1532533,17.8602747 L14.2446247,12.2992125 L12.3178536,13.8859651 C12.1332257,14.0380116 11.8667743,14.0380116 11.6821464,13.8859651 L9.75537533,12.2992125 L3.84674576,17.8602756 L3.84674576,17.8602756 Z M3.1430925,17.1498223 C3.1477226,17.1451097 3.15246435,17.1404678 3.15731765,17.1359 L8.97720082,11.6583629 L3.18214637,6.88596512 C3.16950983,6.87555855 3.15751523,6.86466152 3.14616744,6.85332433 C3.05246763,7.04913384 2.99999728,7.26843937 2.99999728,7.5 L2.99999728,16.5096122 C2.99999728,16.7386275 3.05132045,16.9556556 3.1430925,17.1498223 L3.1430925,17.1498223 Z M20.8569057,17.1498204 C20.9486772,16.9556542 21,16.7386268 21,16.5096122 L21,7.5 C21,7.26844009 20.94753,7.04913522 20.8538307,6.85332617 C20.8424835,6.86466269 20.8304895,6.87555911 20.8178536,6.88596512 L15.0227992,11.6583629 L20.8426823,17.1359 C20.847535,17.1404672 20.8522762,17.1451085 20.8569057,17.1498204 L20.8569057,17.1498204 Z M20.1444281,6.14509696 C19.9491886,6.05206979 19.7306751,6 19.5,6 L4.49999728,6 C4.26932289,6 4.05080997,6.05206949 3.85557086,6.14509614 L12,12.8522731 L20.1444281,6.14509696 L20.1444281,6.14509696 Z M4.49999728,5 L19.5,5 C20.8807119,5 22,6.11928813 22,7.5 L22,16.5096122 C22,17.8903241 20.8807119,19.0096122 19.5,19.0096122 L4.49999728,19.0096122 C3.11928541,19.0096122 1.99999728,17.8903241 1.99999728,16.5096122 L1.99999728,7.5 C1.99999728,6.11928813 3.11928541,5 4.49999728,5 Z"/>
+</svg>
+            <div style="flex:1">
+              <div class="value" id="emailText">mtbconstruct12@gmail.com</div>
+              <div class="meta">Email — dă click pentru a copia</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px">
+              <button class="btn secondary" data-action="email" data-value="mtbconstruct12@gmail.com" aria-label="Email">Email</button>
+            </div>
+          </div>
+
+          <div class="contact-item" role="group" aria-label="Location">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2C8 2 4 5 4 9c0 7 8 13 8 13s8-6 8-13c0-4-4-7-8-7z"></path><circle cx="12" cy="9" r="2.2"></circle></svg>
+            <div style="flex:1">
+              <div class="value" id="locationText">Moldova, Cahul, Slobozia Mare</div>
+              <div class="meta">Locație</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-weight:700">Servicii</div>
+            <div class="muted" style="font-size:13px">Ce overim</div>
+          </div>
+          <div class="services" id="services">
+            <div class="service-pill">Consultăm</div>
+            <div class="service-pill">Măsurăm</div>
+            <div class="service-pill">Instalăm</div>
+          </div>
+		  <div class="about" id="aboutText">
+<p>1. Măsurări la domiciliu
+Venim la locație pentru a face măsurători precise și pentru a discuta toate detaliile proiectului tău.</p>
+<p>2. Consultanță gratuită
+Te ajutăm să alegi tipul de tavan, culoarea, modelul și soluția potrivită pentru spațiul tău – fără costuri suplimentare.
+</p>
+<p>3. Montaj profesionist
+Montăm tavane extensibile la standarde înalte, curat și eficient, folosind tehnici și materiale de calitate.
+</p>
+<p>4. Finalizare rapidă și fără mizerie
+
+Lucrăm rapid, cu minim de disconfort pentru client. După montaj lăsăm spațiul perfect curat.
+</p>
+          </div>
+        </div>
+		
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ====== Configuration ======
+  const contact = {
+    name: "MTB Construct",
+    role: "Tavane Extensibile",
+    phone: "+37360844915",
+    phoneDisplay: "+37360844915",
+    email: "mtbconstruct12@gmail.com",
+    instagram: "https://instagram.com/mtbconstruct12",
+    telegram: "https://t.me/+37360844915",
+    whatsapp: "https://wa.me/37360844915",
+    viber: "viber://chat?number=37360844915",
+    location: { label: "Moldova, Cahul, Slobozia Mare" },
+    heroImages: [
+      "img/photo_5269765370451529272_y.jpg",
+      "img/photo_5269765370451529273_y.jpg",
+      "img/photo_5269765370451529274_y.jpg",
+	  "img/photo_5269765370451529275_y.jpg",
+	  "img/photo_5269765370451529276_y.jpg",
+	  "img/photo_5269765370451529277_y.jpg",
+	  "img/photo_5269765370451529278_y.jpg"
+    ],
+    logo: "img/Logo.jpg" // optional
+  };
+
+  // ====== Initialize UI ======
+  document.getElementById('businessName').textContent = contact.name;
+  document.getElementById('businessRole').textContent = contact.role;
+  document.getElementById('phoneText').textContent = contact.phoneDisplay;
+  document.getElementById('emailText').textContent = contact.email;
+  document.getElementById('locationText').textContent = contact.location.label;
+  document.getElementById('instagramBtn').href = contact.instagram;
+  if(contact.logo) document.getElementById('logo').src = contact.logo;
+
+  // Social buttons
+  document.getElementById('whatsappBtn').addEventListener('click', () => { openLink(contact.whatsapp); setStatus('Se deschide WhatsApp...'); });
+  document.getElementById('telegramBtn').addEventListener('click', () => { openLink(contact.telegram); setStatus('Se deschide Telegram...'); });
+  document.getElementById('viberBtn').addEventListener('click', () => { openLink(contact.viber); setStatus('Set deschide Viber...'); });
+
+  // Contact item behavior: clicking phone/email item copies value
+  document.querySelectorAll('.contact-item').forEach(item => {
+    const type = item.dataset.type;
+    const value = item.dataset.value;
+    // Only phone/email items have data-type; others (location) won't
+    if(type === 'phone' || type === 'email'){
+      item.addEventListener('click', (e) => {
+        // If the click originated from the inner action button, let that button handle it
+        if(e.target.closest('button')) return;
+        copyToClipboard(value);
+      });
+      // keyboard accessibility: Enter or Space triggers copy
+      item.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          copyToClipboard(value);
+        }
+      });
+    }
+  });
+
+  // Buttons inside contact items: Call and Email actions
+  document.querySelectorAll('.contact-item button[data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // prevent parent item click (copy) when pressing the button
+      const action = btn.dataset.action;
+      const value = btn.dataset.value;
+      if(action === 'call'){
+        openLink('tel:' + value);
+        setStatus('Se Apelease...');
+      } else if(action === 'email'){
+        openLink('mailto:' + value);
+        setStatus('Opening email...');
+      }
+    });
+  });
+
+  // Utilities
+  function openLink(url){
+    window.open(url, '_blank', 'noopener');
+  }
+
+  function copyToClipboard(text){
+    if(!text) return setStatus('Nimic disponibil pentru a fi copiat');
+    navigator.clipboard?.writeText(text).then(() => {
+      setStatus('Copiat în clipboard');
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); setStatus('Copiat în clipboard'); } catch(e){ setStatus('Nu s-a putut copia'); }
+      ta.remove();
+    });
+  }
+
+  function setStatus(msg){
+    const el = document.getElementById('statusHint');
+    el.textContent = msg;
+    clearTimeout(el._t);
+    el._t = setTimeout(()=> el.textContent = 'Ready', 2200);
+  }
+
+  // ====== NEW SIMPLE & RELIABLE CAROUSEL ======
+  (function initCarousel() {
+    const slidesContainer = document.getElementById('carouselSlides');
+    const prevButton = document.getElementById('carouselPrev');
+    const nextButton = document.getElementById('carouselNext');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    
+    let currentSlide = 0;
+    const totalSlides = document.querySelectorAll('.carousel-slide').length;
+    let autoPlayInterval;
+    
+    // Function to update carousel position
+    function updateCarousel() {
+      slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+      
+      // Update indicators
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentSlide);
+      });
+    }
+    
+    // Function to go to next slide
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateCarousel();
+    }
+    
+    // Function to go to previous slide
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+    
+    // Function to go to specific slide
+    function goToSlide(index) {
+      currentSlide = index;
+      updateCarousel();
+    }
+    
+    // Event listeners for buttons
+    prevButton.addEventListener('click', prevSlide);
+    nextButton.addEventListener('click', nextSlide);
+    
+    // Event listeners for indicators
+    indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => goToSlide(index));
+    });
+    
+    // Auto-play functionality
+    function startAutoPlay() {
+      autoPlayInterval = setInterval(nextSlide, 4000);
+    }
+    
+    function stopAutoPlay() {
+      clearInterval(autoPlayInterval);
+    }
+    
+    // Pause autoplay on hover
+    const carouselContainer = document.getElementById('carouselContainer');
+    carouselContainer.addEventListener('mouseenter', stopAutoPlay);
+    carouselContainer.addEventListener('mouseleave', startAutoPlay);
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        prevSlide();
+      } else if (e.key === 'ArrowRight') {
+        nextSlide();
+      }
+    });
+    
+    // Initialize
+    updateCarousel();
+    startAutoPlay();
+  })();
+
+  // keyboard shortcuts for quick copy (c = copy phone, e = copy email)
+  window.addEventListener('keydown', (ev) => {
+    if(ev.key === 'c' && !ev.metaKey && !ev.ctrlKey){
+      copyToClipboard(contact.phone); setStatus('Phone copied');
+    } else if(ev.key === 'e'){
+      copyToClipboard(contact.email); setStatus('Email copied');
+    }
+  });
+</script>
+</body>
+</html>
